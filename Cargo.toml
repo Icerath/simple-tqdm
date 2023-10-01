@@ -8,6 +8,10 @@ edition = "2021"
 [features]
 rayon = ["dep:rayon", "indicatif/rayon"]
 
+[[example]]
+name = "rayon"
+required-features = ["rayon"]
+
 [dependencies]
 indicatif = { version = "0.17.7" }
 rayon = { version = "1.8.0", optional = true }
