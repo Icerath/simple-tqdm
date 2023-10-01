@@ -28,16 +28,16 @@ fn progress_bar(config: Config, iter_len: usize) -> ProgressBar {
     let bar = ProgressBar::new(len)
         .with_finish(config.progress_finish())
         .with_prefix(config.desc)
-        .with_style(style(config.unit, config.unit_scale));
+        .with_style(style(config.unit, config.unit_scale, config.postfix));
     if config.disable {
         bar.set_draw_target(ProgressDrawTarget::hidden());
     }
     bar
 }
 
-fn style(unit: Cow<'static, str>, unit_scale: Number) -> ProgressStyle {
+fn style(unit: Cow<'static, str>, unit_scale: Number, postfix: Cow<'static, str>) -> ProgressStyle {
     ProgressStyle::with_template(
-        "{prefix}{percent}|{wide_bar}| {pos}/{len} [{elapsed}<{eta}, {per_sec}]",
+        "{prefix}{percent}|{wide_bar}| {pos}/{len} [{elapsed}<{eta}, {per_sec}{postfix}]",
     )
     .unwrap()
     .with_key(
@@ -66,6 +66,9 @@ fn style(unit: Cow<'static, str>, unit_scale: Number) -> ProgressStyle {
     })
     .with_key("len", move |state: &ProgressState, w: &mut dyn Write| {
         let _ = write!(w, "{:?}", unit_scale * state.len().unwrap_or(state.pos()));
+    })
+    .with_key("postfix", move |_: &ProgressState, w: &mut dyn Write| {
+        let _ = write!(w, "{}", postfix);
     })
     .progress_chars(PROGRESS_CHARS)
 }

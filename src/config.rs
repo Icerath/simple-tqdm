@@ -15,6 +15,7 @@ pub struct Config {
     pub disable: bool,
     pub unit: Cow<'static, str>,
     pub unit_scale: Number,
+    pub postfix: Cow<'static, str>,
 }
 
 impl Config {
@@ -58,6 +59,14 @@ impl Config {
         self
     }
 
+    pub fn with_postfix<S>(mut self, postfix: S) -> Config
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        self.postfix = (", ".to_owned() + &postfix.into()).into();
+        self
+    }
+
     pub(crate) fn progress_finish(&self) -> ProgressFinish {
         if self.leave {
             ProgressFinish::AndLeave
@@ -76,6 +85,7 @@ impl Default for Config {
             disable: false,
             unit: "it".into(),
             unit_scale: Number::Int(1),
+            postfix: "".into(),
         }
     }
 }
