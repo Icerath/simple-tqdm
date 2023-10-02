@@ -2,6 +2,12 @@
 name = "simple-tqdm"
 version = "0.1.1"
 edition = "2021"
+description = "A simple progress bar library much like python's tqdm"
+keywords = ["cli", "progress", "pb", "colors", "progressbar", "tqdm"]
+categories = ["command-line-interface"]
+license = "MIT"
+repository = "https://github.com/Icerath/simple-tqdm/"
+readme = "README.md"
 
 [features]
 rayon = ["dep:rayon", "indicatif/rayon"]
@@ -13,3 +19,7 @@ required-features = ["rayon"]
 [dependencies]
 indicatif = { version = "0.17.7" }
 rayon = { version = "1.8.0", optional = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
