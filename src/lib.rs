@@ -1,3 +1,44 @@
+//! simple-tqdm is a small wrapper around indicatif that tries to be similar to python's [`tqdm`](https://pypi.org/project/tqdm/) library.
+//!
+//! tqdm comes with both a `tqdm` function and a
+//!`Tqdm` trait depending on your preference.
+//!
+//! # Example
+//! ```
+//! use simple_tqdm::tqdm;
+//!
+//! for _ in tqdm(0..2 << 24) {}
+//! ```
+// TODO - gif`
+//! Or if you'd like to customize the progress bar:
+//!
+//! ```
+//! use simple_tqdm::{Tqdm, Config};
+//!
+//! let config = Config::new().with_unit("num");
+//! for _ in (0..2 << 24).tqdm_config(config) {}
+//! ```
+// TODO - gif
+
+//! # Parallel Iterators
+//! tqdm also has optional support for parallel
+//! iterators with [Rayon](https://github.com/rayon-rs/rayon). In your
+//! `Cargo.toml`, use the "rayon" feature:
+//!
+//! ```toml
+//! [dependencies]
+//! simple-tqdm = {version = "*", features = ["rayon"]}
+//! ```
+//! And then use it like this:
+//!
+//! ```
+//! use simple_tqdm::ParTqdm;
+//! use rayon::prelude::*;
+//!
+//! let vec: Vec<_> = (0..100000).into_par_iter().tqdm().map(|i| i + 1).collect();
+//! assert_eq!(vec[0], 1);
+//! ```
+
 mod config;
 
 pub use config::Config;
