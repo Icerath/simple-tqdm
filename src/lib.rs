@@ -32,6 +32,7 @@
 //! }
 //! ```
 //! <img src="https://github.com/Icerath/simple-tqdm/blob/main/screenshots/multiple.gif?raw=true">
+//!
 //! # Parallel Iterators
 //! tqdm also has optional support for parallel
 //! iterators with [Rayon](https://github.com/rayon-rs/rayon). In your
