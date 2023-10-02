@@ -8,6 +8,7 @@ categories = ["command-line-interface"]
 license = "MIT"
 repository = "https://github.com/Icerath/simple-tqdm/"
 readme = "README.md"
+exclude = ["screenshots/*"]
 
 [features]
 rayon = ["dep:rayon", "indicatif/rayon"]

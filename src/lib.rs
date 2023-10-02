@@ -18,7 +18,7 @@
 //! let config = Config::new().with_unit("num");
 //! for _ in (0..2 << 24).tqdm_config(config) {}
 //! ```
-// TODO - gif
+//! <img src="https://github.com/Icerath/simple-tqdm/blob/main/screenshots/large.gif?raw=true">
 
 //! # Parallel Iterators
 //! tqdm also has optional support for parallel
