@@ -1,8 +1,14 @@
 mod config;
+
 pub use config::Config;
 use config::Number;
 use indicatif::{ProgressBar, ProgressBarIter, ProgressDrawTarget, ProgressState, ProgressStyle};
 use std::{borrow::Cow, fmt::Write};
+
+#[cfg(feature = "rayon")]
+mod parallel;
+#[cfg(feature = "rayon")]
+pub use parallel::*;
 
 pub trait Tqdm<I>: Sized {
     fn tqdm_config(self, config: Config) -> ProgressBarIter<I>;
@@ -71,26 +77,4 @@ fn style(unit: Cow<'static, str>, unit_scale: Number, postfix: Cow<'static, str>
         let _ = write!(w, "{}", postfix);
     })
     .progress_chars(PROGRESS_CHARS)
-}
-
-#[cfg(feature = "rayon")]
-use rayon::prelude::*;
-
-#[cfg(feature = "rayon")]
-use indicatif::ParallelProgressIterator;
-
-#[cfg(feature = "rayon")]
-pub trait ParTqdm<I>: Sized {
-    fn tqdm_config(self, _: Config) -> ProgressBarIter<I>;
-    fn tqdm(self) -> ProgressBarIter<I> {
-        self.tqdm_config(Config::default())
-    }
-}
-
-#[cfg(feature = "rayon")]
-impl<I: IndexedParallelIterator> ParTqdm<I> for I {
-    fn tqdm_config(self, config: Config) -> ProgressBarIter<I> {
-        let len = self.len();
-        self.progress_with(progress_bar(config, len))
-    }
 }
