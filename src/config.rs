@@ -2,7 +2,7 @@ use indicatif::ProgressFinish;
 use std::borrow::Cow;
 
 /// Configuration for the Tqdm and ParTqdm progress bars.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct Config {
     /// Placed at the start of the progress bar (default = "")
     pub prefix: Cow<'static, str>,

@@ -42,8 +42,10 @@
 mod config;
 
 pub use config::Config;
-use indicatif::{ProgressBar, ProgressBarIter, ProgressDrawTarget, ProgressState, ProgressStyle};
-use std::{borrow::Cow, fmt::Write};
+use indicatif::{
+    MultiProgress, ProgressBar, ProgressBarIter, ProgressDrawTarget, ProgressState, ProgressStyle,
+};
+use std::{borrow::Cow, fmt::Write, sync::OnceLock};
 
 #[cfg(feature = "rayon")]
 mod parallel;
@@ -61,9 +63,12 @@ pub trait Tqdm<I>: Sized {
     }
 }
 
+static BARS: OnceLock<MultiProgress> = OnceLock::new();
+
 impl<I: ExactSizeIterator> Tqdm<I> for I {
     fn tqdm_config(self, config: Config) -> ProgressBarIter<I> {
-        progress_bar(config, self.len()).wrap_iter(self)
+        let bars = BARS.get_or_init(MultiProgress::new);
+        bars.add(progress_bar(config, self.len())).wrap_iter(self)
     }
 }
 
