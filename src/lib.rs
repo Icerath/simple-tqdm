@@ -86,6 +86,7 @@ fn progress_bar(config: Config, iter_len: usize) -> ProgressBar {
             config.unit_scale,
             config.postfix,
             &config.progress_chars,
+            &config.colour,
         ));
     if config.disable {
         bar.set_draw_target(ProgressDrawTarget::hidden());
@@ -98,10 +99,11 @@ fn style(
     unit_scale: f64,
     postfix: Cow<'static, str>,
     progress_chars: &str,
+    color: &str,
 ) -> ProgressStyle {
     ProgressStyle::with_template(
-        "{prefix}{percent}|{wide_bar}| {pos}/{len} [{elapsed}<{eta}, {per_sec}{postfix}]",
-    )
+        &format!("{{prefix}}{{percent}}|{{wide_bar:.{color}}}| {{pos}}/{{len}} [{{elapsed}}<{{eta}}, {{per_sec}}{{postfix}}]",
+    ))
     .unwrap()
     .with_key(
         "per_sec",

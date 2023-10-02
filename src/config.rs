@@ -18,6 +18,8 @@ pub struct Config {
     pub unit_scale: f64,
     /// Placed at the end of the progress bar (default = "")
     pub postfix: Cow<'static, str>,
+    /// Color used for the progress bar (default = "white")
+    pub colour: Cow<'static, str>,
     /// Characters used for displaying the progress bar.
     pub progress_chars: Cow<'static, str>,
 }
@@ -66,11 +68,16 @@ impl Config {
         self.postfix = (", ".to_owned() + &postfix.into()).into();
         self
     }
+    /// Color used for the progress bar (default = "white")
+    pub fn with_color(mut self, colour: impl Into<Cow<'static, str>>) -> Config {
+        self.colour = colour.into();
+        self
+    }
+    /// Characters used for displaying the progress bar.
     pub fn with_progress_chars(mut self, progress_chars: impl Into<Cow<'static, str>>) -> Config {
         self.progress_chars = progress_chars.into();
         self
     }
-    /// Characters used for displaying the progress bar.
     pub(crate) fn progress_finish(&self) -> ProgressFinish {
         if self.leave {
             ProgressFinish::AndLeave
@@ -90,6 +97,7 @@ impl Default for Config {
             unit: "it".into(),
             unit_scale: 1.0,
             postfix: "".into(),
+            colour: "white".into(),
 
             progress_chars: "█▉▊▋▌▍▎▏ ".into(),
         }
