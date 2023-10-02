@@ -1,7 +1,6 @@
 mod config;
 
 pub use config::Config;
-use config::Number;
 use indicatif::{ProgressBar, ProgressBarIter, ProgressDrawTarget, ProgressState, ProgressStyle};
 use std::{borrow::Cow, fmt::Write};
 
@@ -23,25 +22,37 @@ impl<I: ExactSizeIterator> Tqdm<I> for I {
     }
 }
 
-pub const PROGRESS_CHARS: &str = "█▉▊▋▌▍▎▏ ";
-
 pub fn tqdm<I: ExactSizeIterator>(iter: I) -> ProgressBarIter<I> {
     iter.tqdm()
 }
 
 fn progress_bar(config: Config, iter_len: usize) -> ProgressBar {
-    let len = config.total.unwrap_or(iter_len as u64);
+    let len = match config.total {
+        Some(total) => (total * config.unit_scale) as u64,
+        None => iter_len as u64,
+    };
+
     let bar = ProgressBar::new(len)
         .with_finish(config.progress_finish())
         .with_prefix(config.desc)
-        .with_style(style(config.unit, config.unit_scale, config.postfix));
+        .with_style(style(
+            config.unit,
+            config.unit_scale,
+            config.postfix,
+            &config.progress_chars,
+        ));
     if config.disable {
         bar.set_draw_target(ProgressDrawTarget::hidden());
     }
     bar
 }
 
-fn style(unit: Cow<'static, str>, unit_scale: Number, postfix: Cow<'static, str>) -> ProgressStyle {
+fn style(
+    unit: Cow<'static, str>,
+    unit_scale: f64,
+    postfix: Cow<'static, str>,
+    progress_chars: &str,
+) -> ProgressStyle {
     ProgressStyle::with_template(
         "{prefix}{percent}|{wide_bar}| {pos}/{len} [{elapsed}<{eta}, {per_sec}{postfix}]",
     )
@@ -68,13 +79,17 @@ fn style(unit: Cow<'static, str>, unit_scale: Number, postfix: Cow<'static, str>
         let _ = write!(w, "{minutes:0>2}:{seconds:0>2}");
     })
     .with_key("pos", move |state: &ProgressState, w: &mut dyn Write| {
-        let _ = write!(w, "{:?}", unit_scale * state.pos());
+        let _ = write!(w, "{:?}", unit_scale * state.pos() as f64);
     })
     .with_key("len", move |state: &ProgressState, w: &mut dyn Write| {
-        let _ = write!(w, "{:?}", unit_scale * state.len().unwrap_or(state.pos()));
+        let _ = write!(
+            w,
+            "{:?}",
+            unit_scale * state.len().unwrap_or(state.pos()) as f64
+        );
     })
     .with_key("postfix", move |_: &ProgressState, w: &mut dyn Write| {
         let _ = write!(w, "{}", postfix);
     })
-    .progress_chars(PROGRESS_CHARS)
+    .progress_chars(progress_chars)
 }
