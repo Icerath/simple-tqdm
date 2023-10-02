@@ -1,7 +1,6 @@
-use crate::*;
+use crate::{progress_bar, Config};
+use indicatif::{ParallelProgressIterator, ProgressBarIter};
 use rayon::prelude::*;
-
-use indicatif::ParallelProgressIterator;
 
 pub trait ParTqdm<I>: Sized {
     fn tqdm_config(self, _: Config) -> ProgressBarIter<I>;
