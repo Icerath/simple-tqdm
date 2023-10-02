@@ -9,8 +9,12 @@ mod parallel;
 #[cfg(feature = "rayon")]
 pub use parallel::{par_tqdm, ParTqdm};
 
+/// Wraps an iterator to display it's progress.
 pub trait Tqdm<I>: Sized {
+    /// Wraps an iterator to display it's progress.
+    /// Allows configuration of the progress bar.
     fn tqdm_config(self, config: Config) -> ProgressBarIter<I>;
+    /// Wraps an iterator to display it's progress.
     fn tqdm(self) -> ProgressBarIter<I> {
         self.tqdm_config(Config::default())
     }
@@ -22,6 +26,7 @@ impl<I: ExactSizeIterator> Tqdm<I> for I {
     }
 }
 
+/// Equivalent to using the Tqdm trait method.
 pub fn tqdm<I: ExactSizeIterator>(iter: I) -> ProgressBarIter<I> {
     iter.tqdm()
 }
@@ -34,7 +39,7 @@ fn progress_bar(config: Config, iter_len: usize) -> ProgressBar {
 
     let bar = ProgressBar::new(len)
         .with_finish(config.progress_finish())
-        .with_prefix(config.desc)
+        .with_prefix(config.prefix)
         .with_style(style(
             config.unit,
             config.unit_scale,
@@ -79,14 +84,20 @@ fn style(
         let _ = write!(w, "{minutes:0>2}:{seconds:0>2}");
     })
     .with_key("pos", move |state: &ProgressState, w: &mut dyn Write| {
-        let _ = write!(w, "{:?}", unit_scale * state.pos() as f64);
+        if unit_scale.round() == unit_scale {
+            let _ = write!(w, "{:?}", unit_scale as i64 * state.pos() as i64);
+        } else {
+            let _ = write!(w, "{:?}", unit_scale * state.pos() as f64);
+        }
     })
     .with_key("len", move |state: &ProgressState, w: &mut dyn Write| {
-        let _ = write!(
-            w,
-            "{:?}",
-            unit_scale * state.len().unwrap_or(state.pos()) as f64
-        );
+        if unit_scale.round() == unit_scale {
+            let state_len = state.len().unwrap_or(state.pos()) as i64;
+            let _ = write!(w, "{:?}", unit_scale as i64 * state_len);
+        } else {
+            let state_len = state.len().unwrap_or(state.pos()) as f64;
+            let _ = write!(w, "{:?}", unit_scale * state_len);
+        }
     })
     .with_key("postfix", move |_: &ProgressState, w: &mut dyn Write| {
         let _ = write!(w, "{}", postfix);
