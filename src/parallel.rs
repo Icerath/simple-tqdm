@@ -15,3 +15,7 @@ impl<I: IndexedParallelIterator> ParTqdm<I> for I {
         self.progress_with(progress_bar(config, len))
     }
 }
+
+pub fn par_tqdm<I: IndexedParallelIterator>(iter: I) -> ProgressBarIter<I> {
+    iter.tqdm()
+}

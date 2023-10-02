@@ -8,7 +8,7 @@ use std::{borrow::Cow, fmt::Write};
 #[cfg(feature = "rayon")]
 mod parallel;
 #[cfg(feature = "rayon")]
-pub use parallel::*;
+pub use parallel::{par_tqdm, ParTqdm};
 
 pub trait Tqdm<I>: Sized {
     fn tqdm_config(self, config: Config) -> ProgressBarIter<I>;
@@ -25,7 +25,7 @@ impl<I: ExactSizeIterator> Tqdm<I> for I {
 
 pub const PROGRESS_CHARS: &str = "█▉▊▋▌▍▎▏ ";
 
-pub fn tqdm<I: Tqdm<I>>(iter: I) -> ProgressBarIter<I> {
+pub fn tqdm<I: ExactSizeIterator>(iter: I) -> ProgressBarIter<I> {
     iter.tqdm()
 }
 
