@@ -9,7 +9,7 @@
 //!
 //! for _ in tqdm(0..2 << 24) {}
 //! ```
-// TODO - gif`
+//! <img src="https://github.com/Icerath/simple-tqdm/blob/main/screenshots/large.gif?raw=true">
 //! Or if you'd like to customize the progress bar:
 //!
 //! ```
@@ -18,8 +18,20 @@
 //! let config = Config::new().with_unit("num");
 //! for _ in (0..2 << 24).tqdm_config(config) {}
 //! ```
-//! <img src="https://github.com/Icerath/simple-tqdm/blob/main/screenshots/large.gif?raw=true">
-
+//! Or if you'd like multiple bars.
+//!
+//! ```
+//! use simple_tqdm::{Tqdm, Config};
+//! fn main() {
+//!     let config = Config::new().with_progress_chars(">= ");
+//!     std::thread::scope(|scope| {
+//!         for _ in 0..3 {
+//!             scope.spawn(|| for _ in (0..2 << 24).tqdm_config(config.clone()) {});
+//!         }   
+//!     });
+//! }
+//! ```
+//! <img src="https://github.com/Icerath/simple-tqdm/blob/main/screenshots/multiple.gif?raw=true">
 //! # Parallel Iterators
 //! tqdm also has optional support for parallel
 //! iterators with [Rayon](https://github.com/rayon-rs/rayon). In your
@@ -30,7 +42,6 @@
 //! simple-tqdm = {version = "*", features = ["rayon"]}
 //! ```
 //! And then use it like this:
-//!
 //! ```
 //! use simple_tqdm::ParTqdm;
 //! use rayon::prelude::*;
